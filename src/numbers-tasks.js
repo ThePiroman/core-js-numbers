@@ -50,13 +50,11 @@ function getCircleCircumference(radius) {
  *  -3, 3  => 0
  */
 function getAverage(value1, value2) {
-  const value3 = value1 + value2;
-
-  if (value3 === Infinity) {
+  if (!Number.isFinite(value1 + value2)) {
     return 1.7976931348623157e308;
   }
 
-  return value3 / 2.0;
+  return (value1 + value2) / 2.0;
 }
 
 /**
@@ -90,8 +88,8 @@ function getDistanceBetweenPoints(x1, y1, x2, y2) {
  *   x + 8 = 0       => -8
  *   5*x = 0         => 0
  */
-function getLinearEquationRoot(/* a, b */) {
-  throw new Error('Not implemented');
+function getLinearEquationRoot(a, b) {
+  return -b / a;
 }
 
 /**
@@ -112,11 +110,11 @@ function getLinearEquationRoot(/* a, b */) {
  *   (0,1) (0,1)     => 0
  */
 function getAngleBetweenVectors(x1, y1, x2, y2) {
-  let returnN = Math.atan2(x1, y1) - Math.atan2(x2, y2);
-  if (returnN < 0) {
-    returnN = -returnN;
+  let result = Math.atan2(x1, y1) - Math.atan2(x2, y2);
+  if (result < 0) {
+    result = -result;
   }
-  return returnN;
+  return result;
 }
 
 /**
@@ -133,8 +131,7 @@ function getAngleBetweenVectors(x1, y1, x2, y2) {
  *     0     => 0
  */
 function getLastDigit(value) {
-  const len = value.toString().length;
-  return Number(value.toString()[len - 1]);
+  return value % 10;
 }
 
 /**
@@ -149,6 +146,9 @@ function getLastDigit(value) {
  * '-525.5'     => -525.5
  */
 function parseNumberFromString(value) {
+  if (Number.isNaN(value)) {
+    return NaN;
+  }
   return Number(value);
 }
 
@@ -208,11 +208,10 @@ function roundToPowerOfTen(num, pow) {
  *   17 => true
  */
 function isPrime(n) {
-  for (let i = 2; i < n; ) {
+  for (let i = 2; i < n; i += 1) {
     if (n % i === 0) {
       return false;
     }
-    i += 1;
   }
   return true;
 }
@@ -265,16 +264,15 @@ function getCube(num) {
  *   10 => 55
  */
 function getFibonacciNumber(index) {
-  let i1 = 0;
-  let i2 = 1;
-  let returnN = 0;
-  for (let i = 1; i <= index; ) {
-    returnN = i1 + i2;
-    i1 = i2;
-    i2 = returnN;
-    i += 1;
+  if (index <= 0) return 0;
+  if (index === 1) return 1;
+
+  let a = 0;
+  let b = 1;
+  for (let i = 2; i <= index; i += 1) {
+    [a, b] = [b, a + b];
   }
-  return returnN;
+  return b;
 }
 
 /**
@@ -289,12 +287,11 @@ function getFibonacciNumber(index) {
  *   1  => 1
  */
 function getSumToN(n) {
-  let returnN = 0;
-  for (let i = 0; i <= n; ) {
-    returnN += i;
-    i += 1;
+  let result = 0;
+  for (let i = 0; i <= n; i += 1) {
+    result += i;
   }
-  return returnN;
+  return result;
 }
 
 /**
@@ -310,12 +307,15 @@ function getSumToN(n) {
  */
 function getSumOfDigits(num) {
   const toStr = num.toString();
-  let returnN = 0;
-  for (let i = 0; i < toStr.length; ) {
-    returnN += Number(toStr[i]);
-    i += 1;
-  }
-  return returnN;
+
+  const result = toStr
+    .split('')
+    .reduce(
+      (accumulator, currentValue) =>
+        Number.parseInt(accumulator, 10) + Number.parseInt(currentValue, 10)
+    );
+
+  return result;
 }
 
 /**
@@ -487,7 +487,7 @@ function getFloatOnString(str) {
  * '10', 8              => 8
  */
 function getIntegerOnString(str, base) {
-  return Number.parseInt(str, base) || NaN;
+  return Number.parseInt(str, base);
 }
 
 /**
@@ -639,15 +639,7 @@ function getHypotenuse(a, b) {
  * 15 => 8
  */
 function getCountOfOddNumbers(number) {
-  let returnN = 0;
-  for (let i = 0; i < number; ) {
-    if (i % 2 === 0) {
-      returnN += 1;
-    }
-    i += 1;
-  }
-
-  return returnN;
+  return Math.floor((Math.abs(number) + 1) / 2);
 }
 
 module.exports = {
